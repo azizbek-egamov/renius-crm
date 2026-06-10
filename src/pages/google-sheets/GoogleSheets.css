@@ -1,0 +1,356 @@
+/* ==========================================
+   GOOGLE SHEETS SYNC PAGE
+   Premium Design System
+   ========================================== */
+
+:root {
+    --color-sheets: #34a853;
+    --color-sheets-light: rgba(52, 168, 83, 0.08);
+    --color-sheets-light-hover: rgba(52, 168, 83, 0.15);
+    --color-sheets-gradient: linear-gradient(135deg, #34a853 0%, #1b5e20 100%);
+}
+
+[data-theme="dark"] {
+    --color-sheets: #4caf50;
+    --color-sheets-light: rgba(76, 175, 80, 0.12);
+    --color-sheets-light-hover: rgba(76, 175, 80, 0.2);
+    --color-sheets-gradient: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+}
+
+.google-sheets-page {
+    padding: 24px;
+    background: var(--bg-primary);
+    min-height: calc(100vh - 64px);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.google-sheets-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 20px;
+    flex-wrap: wrap;
+    animation: fadeInDown 0.5s ease-out;
+}
+
+.google-sheets-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.google-sheets-page .header-icon {
+    width: 54px;
+    height: 54px;
+    background: var(--color-sheets-gradient);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 16px var(--color-sheets-light);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.google-sheets-page .header-icon:hover {
+    transform: rotate(8deg) scale(1.08);
+    box-shadow: 0 12px 24px var(--color-sheets-light-hover);
+}
+
+.google-sheets-page .header-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.google-sheets-page .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.google-sheets-page .page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.google-sheets-page .btn-sync {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.google-sheets-page .btn-sync:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    border-color: var(--color-sheets);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.google-sheets-page .btn-sync:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.google-sheets-page .btn-sync svg {
+    width: 20px;
+    height: 20px;
+}
+
+.google-sheets-page .btn-sync.syncing svg {
+    animation: spin 2s linear infinite;
+}
+
+/* Sync Info Banner */
+.sync-info-banner {
+    display: flex;
+    gap: 20px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--color-sheets);
+    box-shadow: var(--shadow-sm);
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+}
+
+.sync-info-banner .info-icon {
+    font-size: 32px;
+}
+
+.sync-info-banner .info-text h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sync-info-banner .info-text p {
+    margin: 4px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Projects Sync Table Card */
+.projects-sync-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+.projects-sync-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-sheets-light-hover);
+}
+
+.projects-sync-card .card-header {
+    margin-bottom: 20px;
+}
+
+.projects-sync-card .card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.sync-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sync-table th {
+    text-align: left;
+    padding: 16px;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sync-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.sync-table tr {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sync-table tr:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(4px);
+}
+
+.project-name-cell {
+    font-weight: 600;
+    color: var(--color-sheets) !important;
+}
+
+.url-cell {
+    max-width: 300px;
+}
+
+.url-container {
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    opacity: 0.8;
+    max-width: 100%;
+}
+
+.gsheet-url-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.gsheet-url-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 220px;
+}
+
+.plus-badge {
+    background: var(--color-sheets-light);
+    color: var(--color-sheets);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+    border: 1px solid var(--color-sheets-light-hover);
+    flex-shrink: 0;
+}
+
+.warning-text {
+    color: var(--accent-danger);
+    font-style: italic;
+}
+
+.status-badge-inline {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-badge-inline.active {
+    background: var(--color-sheets-light);
+    color: var(--color-sheets);
+}
+
+.status-badge-inline.inactive {
+    background: var(--accent-danger-light);
+    color: var(--accent-danger);
+}
+
+.last-sync-cell {
+    color: var(--text-secondary);
+}
+
+.btn-edit-project {
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-edit-project:hover {
+    background: var(--color-sheets);
+    color: white;
+    border-color: var(--color-sheets);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-sheets-light-hover);
+}
+
+.btn-edit-project:active {
+    transform: translateY(0);
+}
+
+.empty-table-cell {
+    text-align: center;
+    padding: 60px !important;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.google-sheets-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-sheets-light);
+    border-top-color: var(--color-sheets);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .google-sheets-page {
+        padding: 16px;
+    }
+    
+    .google-sheets-page .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .google-sheets-page .btn-sync {
+        width: 100%;
+        justify-content: center;
+    }
+}

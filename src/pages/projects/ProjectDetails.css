@@ -1,0 +1,319 @@
+.project-details-page {
+    padding: 24px;
+    height: 100vh;
+    overflow-y: auto;
+    color: var(--text-primary);
+}
+
+/* Header */
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+}
+
+.project-title-large {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.status-badge-large {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 12px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: auto;
+    min-width: fit-content;
+    white-space: nowrap;
+    justify-content: center;
+}
+
+.action-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.action-btn:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.action-btn.delete:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+
+/* Banner */
+.details-banner-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    background-color: var(--bg-secondary);
+    position: relative;
+    border: 1px solid var(--border-color);
+}
+
+.details-banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Main Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+/* Cards */
+.info-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-card h3 svg {
+    color: var(--text-secondary);
+}
+
+/* Info Grid inside card */
+.info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.info-item label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.info-item p {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Prices */
+.prices-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.price-box {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+
+.price-box:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+.price-box.basic {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.price-box.standard {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.price-box.premium {
+    background: linear-gradient(145deg, rgba(236, 72, 153, 0.1), rgba(236, 72, 153, 0.05));
+    border-color: rgba(236, 72, 153, 0.2);
+}
+
+.price-name {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.price-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.price-box.standard .price-amount {
+    color: #60a5fa;
+}
+
+.price-box.premium .price-amount {
+    color: #f472b6;
+}
+
+
+/* Marketing Section */
+.marketing-item {
+    margin-bottom: 20px;
+}
+
+.marketing-item h4 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.marketing-content {
+    background-color: var(--bg-secondary);
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    border-left: 3px solid var(--border-color);
+}
+
+.marketing-content.pain {
+    border-left-color: var(--danger-color);
+}
+
+.marketing-content.gain {
+    border-left-color: var(--success-color);
+}
+
+.marketing-content.target {
+    border-left-color: var(--primary-color);
+}
+
+/* Sidebar Stats */
+.stat-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-box:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-value.highlight {
+    color: var(--primary-color);
+}
+
+.recent-leads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.empty-leads {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .prices-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-banner-container {
+        height: 200px;
+    }
+}
