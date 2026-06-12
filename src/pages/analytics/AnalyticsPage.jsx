@@ -8,7 +8,9 @@ import {
 import { Root, Tooltip, Legend, color, percent } from "@amcharts/amcharts5";
 import { XYChart, DateAxis, AxisRendererX, AxisRendererY, ValueAxis, LineSeries, CategoryAxis, ColumnSeries } from "@amcharts/amcharts5/xy";
 import { PieChart, PieSeries, SlicedChart, FunnelSeries } from "@amcharts/amcharts5/percent";
+import { PieChart as RePieChart, Pie as RePie, Cell as ReCell, BarChart as ReBarChart, Bar as ReBar, XAxis as ReXAxis, YAxis as ReYAxis, CartesianGrid as ReCartesianGrid, Tooltip as ReTooltip, Legend as ReLegend, ResponsiveContainer as ReResponsiveContainer, LineChart as ReLineChart, Line as ReLine } from 'recharts';
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+
 import am5themes_Dark from "@amcharts/amcharts5/themes/Dark";
 
 import AnalyticsFilterDrawer from './components/AnalyticsFilterDrawer';
@@ -19,14 +21,37 @@ import { formatDateInput, isValidDateStr, parseUIDateToApi, formatApiDateToUI } 
 import './Analytics.css';
 import api from '../../services/api';
 
+const CHART_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
+
+const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="custom-tooltip">
+                <div className="tooltip-header">{label}</div>
+                <div className="tooltip-body">
+                    {payload.map((entry, index) => (
+                        <div className="tooltip-row" key={index}>
+                            <span className="tooltip-dot" style={{ backgroundColor: entry.color || entry.fill }} />
+                            <span className="tooltip-name">{entry.name}:</span>
+                            <span className="tooltip-value">{entry.value}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    return null;
+};
+
 const AnalyticsPage = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const [formalarData, setFormalarData] = useState(null);
     const [marketingData, setMarketingData] = useState(null);
+    const [studentData, setStudentData] = useState(null);
 
     const [filterOpen, setFilterOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('leads'); // leads | sales (future)
+    const [activeTab, setActiveTab] = useState('leads'); // leads | sales | students
     const [selectedOperator, setSelectedOperator] = useState(null);
     const [hiddenStages, setHiddenStages] = useState([]); // Track hidden stage names for filtering
 
@@ -76,7 +101,7 @@ const AnalyticsPage = () => {
             const apiStart = filters.start_date && filters.start_date.includes('-') ? filters.start_date : parseUIDateToApi(filters.start_date);
             const apiEnd = filters.end_date && filters.end_date.includes('-') ? filters.end_date : parseUIDateToApi(filters.end_date);
 
-            const [res, formalarRes, marketingRes] = await Promise.all([
+            const [res, formalarRes, marketingRes, studentRes] = await Promise.all([
                 analyticsService.getStats({
                     start_date: apiStart,
                     end_date: apiEnd,
@@ -90,12 +115,19 @@ const AnalyticsPage = () => {
                 analyticsService.getMarketingStats({
                     start_date: apiStart,
                     end_date: apiEnd
+                }),
+                api.get('/analytics/student_stats/', {
+                    params: {
+                        start_date: apiStart,
+                        end_date: apiEnd
+                    }
                 })
             ]);
 
             setData(res.data);
             setFormalarData(formalarRes.data);
             setMarketingData(marketingRes.data);
+            setStudentData(studentRes.data);
         } catch (error) {
             console.error("fetchAnalytics error details:", error);
             toast.error("Analitika ma'lumotlarini yuklashda xatolik");
@@ -103,6 +135,7 @@ const AnalyticsPage = () => {
             setLoading(false);
         }
     };
+
 
     const handleFilter = (newFilters) => {
         setFilters(newFilters);
@@ -696,6 +729,12 @@ const AnalyticsPage = () => {
                             >
                                 Marketing
                             </button>
+                            <button
+                                className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('students')}
+                            >
+                                O'quvchilar
+                            </button>
                         </div>
                         <div style={{
                             display: 'flex', alignItems: 'center', gap: '8px',
@@ -1274,6 +1313,240 @@ const AnalyticsPage = () => {
 
                 </div>
             )}
+
+            {activeTab === 'students' && (
+                <div className="animate-fadeIn" style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginBottom: '40px' }}>
+                    {/* Charts Grid 1 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+                        {/* Admissions Trend */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Admissions Trend</span>
+                                <h4>Yangi qabul qilingan o'quvchilar dinamikasi</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px" }}>
+                                {(!studentData?.admissions_chart || studentData.admissions_chart.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <ReResponsiveContainer width="100%" height="100%">
+                                        <ReLineChart data={studentData.admissions_chart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                            <ReCartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                            <ReXAxis dataKey="month" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                            <ReYAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                            <ReTooltip content={<CustomTooltip />} />
+                                            <ReLine type="monotone" name="O'quvchilar" dataKey="count" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, stroke: '#6366f1', strokeWidth: 2, fill: 'var(--bg-secondary)' }} />
+                                        </ReLineChart>
+                                    </ReResponsiveContainer>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Gender Distribution */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Gender Split</span>
+                                <h4>O'quvchilar jins taqsimoti</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                {(!studentData?.gender_distribution || studentData.gender_distribution.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <>
+                                        <ReResponsiveContainer width="100%" height={180}>
+                                            <RePieChart>
+                                                <RePie
+                                                    data={studentData.gender_distribution}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={50}
+                                                    outerRadius={70}
+                                                    paddingAngle={5}
+                                                    dataKey="count"
+                                                    nameKey="gender_display"
+                                                >
+                                                    {studentData.gender_distribution.map((entry, index) => (
+                                                        <ReCell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                                    ))}
+                                                </RePie>
+                                                <ReTooltip content={<CustomTooltip />} />
+                                            </RePieChart>
+                                        </ReResponsiveContainer>
+                                        <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
+                                            {studentData.gender_distribution.map((item, idx) => (
+                                                <div key={item.gender} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[idx % CHART_COLORS.length] }}></span>
+                                                    <span>{item.gender_display}: <strong>{item.count}</strong></span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Charts Grid 2 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                        {/* Class Occupancy */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Class Occupancy</span>
+                                <h4>Sinflarning to'lish ko'rsatkichi</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px" }}>
+                                {(!studentData?.class_occupancy || studentData.class_occupancy.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <ReResponsiveContainer width="100%" height="100%">
+                                        <ReBarChart data={studentData.class_occupancy} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                            <ReCartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                            <ReXAxis dataKey="class_name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                            <ReYAxis tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                            <ReTooltip content={<CustomTooltip />} />
+                                            <ReBar name="O'quvchilar soni" dataKey="active_students" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                            <ReBar name="To'ldirilganlik (%)" dataKey="occupancy_rate" fill="#10b981" radius={[4, 4, 0, 0]} />
+                                        </ReBarChart>
+                                    </ReResponsiveContainer>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Age Distribution */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Age Distribution</span>
+                                <h4>O'quvchilar yosh taqsimoti</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                {(!studentData?.age_distribution || studentData.age_distribution.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <>
+                                        <ReResponsiveContainer width="100%" height={180}>
+                                            <RePieChart>
+                                                <RePie
+                                                    data={studentData.age_distribution}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={50}
+                                                    outerRadius={70}
+                                                    paddingAngle={5}
+                                                    dataKey="count"
+                                                    nameKey="range"
+                                                >
+                                                    {studentData.age_distribution.map((entry, index) => (
+                                                        <ReCell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                                    ))}
+                                                </RePie>
+                                                <ReTooltip content={<CustomTooltip />} />
+                                            </RePieChart>
+                                        </ReResponsiveContainer>
+                                        <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginTop: '16px', maxHeight: '80px', overflowY: 'auto' }}>
+                                            {studentData.age_distribution.map((item, idx) => (
+                                                <div key={item.range} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[idx % CHART_COLORS.length] }}></span>
+                                                    <span>{item.range}: <strong>{item.count}</strong></span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Charts Grid 3 */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                        {/* Status Distribution */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Student Status</span>
+                                <h4>O'quvchilar holatlari bo'yicha taqsimot</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                {(!studentData?.status_distribution || studentData.status_distribution.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <>
+                                        <ReResponsiveContainer width="100%" height={180}>
+                                            <RePieChart>
+                                                <RePie
+                                                    data={studentData.status_distribution}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={50}
+                                                    outerRadius={70}
+                                                    paddingAngle={5}
+                                                    dataKey="count"
+                                                    nameKey="status_display"
+                                                >
+                                                    {studentData.status_distribution.map((entry, index) => (
+                                                        <ReCell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                                    ))}
+                                                </RePie>
+                                                <ReTooltip content={<CustomTooltip />} />
+                                            </RePieChart>
+                                        </ReResponsiveContainer>
+                                        <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginTop: '16px' }}>
+                                            {studentData.status_distribution.map((item, idx) => (
+                                                <div key={item.status} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[idx % CHART_COLORS.length] }}></span>
+                                                    <span>{item.status_display}: <strong>{item.count}</strong></span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Referral Source */}
+                        <div className="chart-card">
+                            <div className="chart-card-header">
+                                <span className="chart-number">Heard Sources</span>
+                                <h4>O'quvchilar kelish manbalari tahlili</h4>
+                            </div>
+                            <div className="chart-body" style={{ height: "300px", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                {(!studentData?.heard_distribution || studentData.heard_distribution.length === 0) ? (
+                                    <div className="chart-no-data">Ma'lumot topilmadi</div>
+                                ) : (
+                                    <>
+                                        <ReResponsiveContainer width="100%" height={180}>
+                                            <RePieChart>
+                                                <RePie
+                                                    data={studentData.heard_distribution}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={50}
+                                                    outerRadius={70}
+                                                    paddingAngle={5}
+                                                    dataKey="count"
+                                                    nameKey="source_display"
+                                                >
+                                                    {studentData.heard_distribution.map((entry, index) => (
+                                                        <ReCell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                                                    ))}
+                                                </RePie>
+                                                <ReTooltip content={<CustomTooltip />} />
+                                            </RePieChart>
+                                        </ReResponsiveContainer>
+                                        <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginTop: '16px', maxHeight: '80px', overflowY: 'auto' }}>
+                                            {studentData.heard_distribution.map((item, idx) => (
+                                                <div key={item.source} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: CHART_COLORS[idx % CHART_COLORS.length] }}></span>
+                                                    <span>{item.source_display}: <strong>{item.count}</strong></span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
 
             {/* Filter Drawer */}
             <AnalyticsFilterDrawer

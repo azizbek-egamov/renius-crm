@@ -55,3 +55,9 @@ export const contractPaymentService = {
     update: (id, data) => api.patch(`/contract-payments/${id}/`, data),
     delete: (id) => api.delete(`/contract-payments/${id}/`),
 };
+
+export const smsService = {
+    sendPaymentReminders: (data) => api.post('/sms-queue/send_payment_reminders/', data),
+    getPending: () => api.get('/sms-queue/pending/'),
+};
+

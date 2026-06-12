@@ -115,6 +115,12 @@ const Sidebar = () => {
         },
         {
             type: 'link',
+            path: '/finance',
+            icon: <WalletIcon />,
+            label: 'Moliya'
+        },
+        {
+            type: 'link',
             path: '/instagram',
             icon: <InstagramSidebarIcon />,
             label: 'Instagram'

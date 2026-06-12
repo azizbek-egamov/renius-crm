@@ -14,6 +14,7 @@ import LeadsKanban from './pages/leads/LeadsKanban';
 import LeadsList from './pages/leads/LeadsList';
 import LeadsStatistics from './pages/leads/LeadsStatistics';
 import AnalyticsPage from './pages/analytics/AnalyticsPage';
+import FinancePage from './pages/finance/FinancePage';
 import UsersPage from './pages/users/UsersPage';
 
 import FormList from './pages/forms/FormList';
@@ -53,7 +54,9 @@ function App() {
                             {/* Dashboard */}
                             <Route path="/" element={<ProtectedLayout allowedRoles={['admin']}><Dashboard /></ProtectedLayout>} />
                             <Route path="/analytics" element={<ProtectedLayout allowedRoles={['admin']}><AnalyticsPage /></ProtectedLayout>} />
+                            <Route path="/finance" element={<ProtectedLayout allowedRoles={['admin']}><FinancePage /></ProtectedLayout>} />
                             <Route path="/instagram" element={<ProtectedLayout allowedRoles={['admin']}><InstagramStats /></ProtectedLayout>} />
+
                             <Route path="/instagram/callback" element={<ProtectedLayout allowedRoles={['admin']}><InstagramCallback /></ProtectedLayout>} />
                             <Route path="/google-sheets" element={<ProtectedLayout allowedRoles={['admin']}><GoogleSheets /></ProtectedLayout>} />
                             <Route path="/users" element={<ProtectedLayout allowedRoles={['admin']}><UsersPage /></ProtectedLayout>} />

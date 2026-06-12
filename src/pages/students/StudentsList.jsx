@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Users, AlertCircle, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Users, AlertCircle, Edit, Trash2, MessageSquare, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import { studentService, schoolClassService } from '../../services/students';
 import { formatDateInput, isValidDateStr, parseUIDateToApi } from '../../utils/dateFormatter';
@@ -126,6 +126,8 @@ const StudentsList = () => {
         }
     };
 
+
+
     return (
         <div className="students-page animate-fadeIn">
             <div className="page-header">
@@ -133,10 +135,11 @@ const StudentsList = () => {
                     <h1 className="page-title">O'quvchilar</h1>
                     <p className="page-subtitle">Ro'yxat, filtr va qarzdorlik holati</p>
                 </div>
-                <button className="btn-primary" onClick={() => setShowForm(true)}>
-                    <Plus size={18} />
-                    Yangi o'quvchi
-                </button>
+                <div style={{ display: 'flex', gap: 10 }}>
+                    <button className="btn-primary" onClick={() => setShowForm(true)}>
+                        <Plus size={18} /> Yangi o'quvchi
+                    </button>
+                </div>
             </div>
 
             <div className="content-card">
@@ -326,6 +329,7 @@ const StudentsList = () => {
         </div>
     );
 };
+
 
 export default StudentsList;
 
