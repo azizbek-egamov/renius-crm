@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { leadService } from '../../services/leads';
+import { API_URL } from '../../services/api';
 import { useOutletContext } from 'react-router-dom';
 import { toast } from 'sonner';
 import StatusManagement from './StatusManagement';
@@ -412,6 +413,68 @@ const LeadsKanban = () => {
         loadData(ignore);
         return () => { ignore = true; };
     }, [refreshTrigger, globalSearch, dateFrom, dateTo, selectedSource]);
+
+    const loadDataRef = useRef(loadData);
+    loadDataRef.current = loadData;
+
+    // WebSocket connection helper
+    const getWsUrl = () => {
+        let wsUrl = API_URL.replace(/^http/, 'ws');
+        wsUrl = wsUrl.replace(/\/api\/?$/, '/ws/broadcast/');
+        return wsUrl;
+    };
+
+    // WebSocket synchronization engine
+    useEffect(() => {
+        let socket = null;
+        let reconnectTimeout = null;
+        let isDisposed = false;
+
+        const connectWebSocket = () => {
+            if (isDisposed) return;
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            const wsUrl = getWsUrl();
+            const fullWsUrl = `${wsUrl}?token=${token}`;
+
+            console.log("WebSocket: Connecting to", wsUrl);
+            socket = new WebSocket(fullWsUrl);
+
+            socket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'lead_update') {
+                        console.log("WebSocket: Lead update notification received", data);
+                        loadDataRef.current();
+                    }
+                } catch (err) {
+                    console.error("WebSocket: Failed to parse message", err);
+                }
+            };
+
+            socket.onclose = (event) => {
+                console.log("WebSocket: Connection closed. Reconnecting in 5s...", event);
+                if (!isDisposed) {
+                    reconnectTimeout = setTimeout(connectWebSocket, 5000);
+                }
+            };
+
+            socket.onerror = (err) => {
+                console.error("WebSocket: Error occurred", err);
+                socket.close();
+            };
+        };
+
+        connectWebSocket();
+
+        return () => {
+            isDisposed = true;
+            if (socket) socket.close();
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+        };
+    }, []);
+
 
     // Auto-refresh when a lead in "Qayta bog'lanish" becomes overdue
     useEffect(() => {

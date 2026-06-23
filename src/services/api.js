@@ -19,7 +19,7 @@ const getApiUrl = () => {
     return 'https://momi.food707.uz/api';
 };
 
-const API_URL = getApiUrl();
+export const API_URL = getApiUrl();
 
 const api = axios.create({
     baseURL: API_URL,
