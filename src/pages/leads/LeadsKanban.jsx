@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { leadService } from '../../services/leads';
 import { API_URL } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { useOutletContext } from 'react-router-dom';
 import { toast } from 'sonner';
 import StatusManagement from './StatusManagement';
@@ -264,6 +265,7 @@ const LeadCard = React.memo(({ lead, onClick, onConvert, onEnroll, onDragStart, 
 
 const LeadsKanban = () => {
     const { openEditModal, refreshTrigger } = useOutletContext();
+    const { refreshToken } = useAuth();
 
     const [columns, setColumns] = useState([]);
     const [stats, setStats] = useState({ total: 0, today: 0, converted: 0, answered: 0 });
@@ -424,15 +426,42 @@ const LeadsKanban = () => {
         return wsUrl;
     };
 
+    // Helper to check if JWT token is expired or close to it
+    const isTokenExpired = (token) => {
+        if (!token) return true;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.exp * 1000 < Date.now() + 30000; // Refresh if less than 30s left
+        } catch (e) {
+            return true;
+        }
+    };
+
     // WebSocket synchronization engine
     useEffect(() => {
         let socket = null;
         let reconnectTimeout = null;
         let isDisposed = false;
 
-        const connectWebSocket = () => {
+        const connectWebSocket = async () => {
             if (isDisposed) return;
-            const token = localStorage.getItem('accessToken');
+            let token = localStorage.getItem('accessToken');
+
+            if (isTokenExpired(token)) {
+                console.log("WebSocket: Token expired, attempting refresh...");
+                const refreshed = await refreshToken();
+                if (refreshed) {
+                    token = localStorage.getItem('accessToken');
+                    console.log("WebSocket: Token refreshed successfully");
+                } else {
+                    console.warn("WebSocket: Token refresh failed. Retrying connection in 10s...");
+                    if (!isDisposed) {
+                        reconnectTimeout = setTimeout(connectWebSocket, 10000);
+                    }
+                    return;
+                }
+            }
+
             if (!token) return;
 
             const wsUrl = getWsUrl();
